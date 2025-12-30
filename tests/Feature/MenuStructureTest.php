@@ -2,9 +2,7 @@
 
 use App\Models\Category;
 use App\Models\MenuItem;
-// use Illuminate\Foundation\Testing\RefreshDatabase;
 
-// uses(RefreshDatabase::class);
 
 test('categories can be created', function () {
     $category = Category::factory()->create([
