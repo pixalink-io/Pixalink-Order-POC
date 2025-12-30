@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
             MenuItemSeeder::class,
             OptionGroupSeeder::class,
             OptionSeeder::class,
+            OrderSeeder::class,
         ]);
     }
 }

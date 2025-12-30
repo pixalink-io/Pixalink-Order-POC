@@ -38,4 +38,9 @@ class MenuItem extends Model
     {
         return $this->hasMany(OptionGroup::class)->orderBy('sort_order');
     }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 }
