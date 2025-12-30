@@ -23,6 +23,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             CategorySeeder::class,
             MenuItemSeeder::class,
+            OptionGroupSeeder::class,
+            OptionSeeder::class,
         ]);
     }
 }
