@@ -43,8 +43,11 @@ class MenuItemForm
                     ->minValue(0),
 
                 FileUpload::make('image')
-                    ->image()
+                    ->disk('public')
                     ->directory('menu-items')
+                    ->image()
+                    ->imageEditor()
+                    ->maxSize(2048)
                     ->columnSpanFull(),
 
                 TextInput::make('sort_order')
