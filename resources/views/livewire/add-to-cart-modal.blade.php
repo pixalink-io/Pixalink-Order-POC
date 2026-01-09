@@ -62,15 +62,19 @@
                         <!-- Radio Buttons -->
                         <div class="space-y-2">
                             @foreach($group->options as $option)
-                            <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 {{ !$option->is_available ? 'opacity-50 cursor-not-allowed' : '' }}">
+                            @php
+                                $isSelected = $this->isOptionSelected($group->id, $option->id);
+                            @endphp
+                            <label 
+                                wire:click="selectOption({{ $group->id }}, {{ $option->id }})"
+                                class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors {{ !$option->is_available ? 'opacity-50 cursor-not-allowed' : '' }} {{ $isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300' }}"
+                            >
                                 <div class="flex items-center">
-                                    <input 
-                                        type="radio" 
-                                        wire:model="selectedOptions.{{ $group->id }}" 
-                                        value="{{ $option->id }}"
-                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                                        {{ !$option->is_available ? 'disabled' : '' }}
-                                    >
+                                    <div class="flex-shrink-0 h-4 w-4 rounded-full border-2 flex items-center justify-center {{ $isSelected ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300' }}">
+                                        @if($isSelected)
+                                        <div class="h-2 w-2 rounded-full bg-white"></div>
+                                        @endif
+                                    </div>
                                     <span class="ml-3 text-gray-900">
                                         {{ $option->name }}
                                         @if(!$option->is_available)
@@ -90,15 +94,21 @@
                         <!-- Checkboxes -->
                         <div class="space-y-2">
                             @foreach($group->options as $option)
-                            <label class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 {{ !$option->is_available ? 'opacity-50 cursor-not-allowed' : '' }}">
+                            @php
+                                $isSelected = $this->isOptionSelected($group->id, $option->id);
+                            @endphp
+                            <label 
+                                wire:click="selectOption({{ $group->id }}, {{ $option->id }})"
+                                class="flex items-center justify-between p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors {{ !$option->is_available ? 'opacity-50 cursor-not-allowed' : '' }} {{ $isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300' }}"
+                            >
                                 <div class="flex items-center">
-                                    <input 
-                                        type="checkbox" 
-                                        wire:model="selectedOptions.{{ $group->id }}" 
-                                        value="{{ $option->id }}"
-                                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                        {{ !$option->is_available ? 'disabled' : '' }}
-                                    >
+                                    <div class="flex-shrink-0 h-4 w-4 rounded border-2 flex items-center justify-center {{ $isSelected ? 'border-indigo-600 bg-indigo-600' : 'border-gray-300' }}">
+                                        @if($isSelected)
+                                        <svg class="h-3 w-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        @endif
+                                    </div>
                                     <span class="ml-3 text-gray-900">
                                         {{ $option->name }}
                                         @if(!$option->is_available)
@@ -119,7 +129,7 @@
                         @if($group->min_selections > 0 || $group->max_selections)
                         <p class="text-xs text-gray-500 mt-1">
                             @if($group->min_selections > 0 && $group->max_selections)
-                            Select {{ $group->min_selections }} to {{ $group->max_selections }} options
+                            Select {{ $group->min_selections }} to {{ $group->max_selections }} option(s)
                             @elseif($group->min_selections > 0)
                             Select at least {{ $group->min_selections }} option(s)
                             @elseif($group->max_selections)
@@ -170,12 +180,21 @@
                         <!-- Add to Cart Button -->
                         <button 
                             wire:click="addToCart" 
-                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+                            wire:loading.attr="disabled"
+                            class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            Add to Cart
+                            <span wire:loading.remove wire:target="addToCart">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </span>
+                            <span wire:loading wire:target="addToCart">
+                                <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            </span>
+                            <span>Add to Cart - ${{ number_format($this->itemTotal, 2) }}</span>
                         </button>
                     </div>
                 </div>
